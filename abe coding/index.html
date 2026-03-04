@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: #667eea;
+        }
+
+        .btn-logout {
+            background: #f56565;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #e53e3e;
+        }
+
+        /* Main Container */
+        .main-container {
+            margin-top: 80px;
+            padding: 2rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Forms */
+        .forms-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-wrapper {
+            transition: all 0.3s ease;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            flex: 1;
+        }
+
+        .form-group.half {
+            flex: 0 0 calc(50% - 0.5rem);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        small {
+            display: block;
+            color: #718096;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            padding: 0.5rem 0;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: normal;
+            margin-bottom: 0;
+        }
+
+        .radio-group input[type="radio"] {
+            width: auto;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+        }
+
+        .btn-secondary {
+            background: #48bb78;
+        }
+
+        .btn-secondary:hover {
+            background: #38a169;
+        }
+
+        .btn-danger {
+            background: #f56565;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+
+        /* Toggle Links */
+        .toggle-form {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #718096;
+        }
+
+        .toggle-form a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .toggle-form a:hover {
+            text-decoration: underline;
+        }
+
+        /* Messages */
+        .message {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+
+        .message.success {
+            display: block;
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .message.error {
+            display: block;
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+
+        .message.info {
+            display: block;
+            background: #bee3f8;
+            color: #2c5282;
+            border: 1px solid #90cdf4;
+        }
+
+        /* Dashboard */
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+        }
+
+        .stat-info h3 {
+            color: #4a5568;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-info p {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            width: 200px;
+        }
+
+        .progress {
+            background: #667eea;
+            height: 100%;
+            color: white;
+            font-size: 0.7rem;
+            text-align: center;
+            line-height: 10px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            margin-top: 2rem;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #2d3748;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .action-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Profile Page */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .avatar-placeholder {
+            width: 100px;
+            height: 100px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .profile-title h1 {
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-title p {
+            color: #718096;
+        }
+
+        .profile-sections {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .profile-section {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+
+        .profile-section h2 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            padding: 0.5rem;
+        }
+
+        .info-item label {
+            color: #718096;
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-item span {
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        .info-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Tabs */
+        .edit-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: #edf2f7;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #4a5568;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Education List */
+        .education-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .education-item h4 {
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .education-item p {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .social-link.linkedin { background: #0077b5; }
+        .social-link.github { background: #333; }
+        .social-link.twitter { background: #1da1f2; }
+        .social-link.facebook { background: #1877f2; }
+        .social-link.instagram { background: #e4405f; }
+        .social-link.website { background: #4a5568; }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .edit-tabs {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">UserManagement</div>
+        <ul class="nav-menu" id="navMenu">
+            <!-- Navigation will be populated by JavaScript -->
+        </ul>
+    </nav>
+
+    <div class="main-container">
+        <div class="container" id="app">
+            <!-- Content will be loaded by JavaScript -->
+            <div class="loading" style="margin: 2rem auto; display: block;"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== STATE MANAGEMENT ====================
+        let currentUser = null;
+        let currentView = 'home';
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthStatus();
+            handleRouting();
+            window.addEventListener('hashchange', handleRouting);
+        });
+
+        // ==================== ROUTING ====================
+        function handleRouting() {
+            const hash = window.location.hash.slice(1) || 'home';
+            
+            // Check if user is authenticated for protected routes
+            const protectedRoutes = ['dashboard', 'profile', 'edit-profile'];
+            if (protectedRoutes.includes(hash) && !currentUser) {
+                window.location.hash = 'login';
+                return;
+            }
+
+            currentView = hash;
+            renderView(hash);
+            updateNavigation();
+        }
+
+        function renderView(view) {
+            switch(view) {
+                case 'login':
+                case 'register':
+                    renderAuthForms();
+                    break;
+                case 'dashboard':
+                    renderDashboard();
+                    break;
+                case 'profile':
+                    renderProfile();
+                    break;
+                case 'edit-profile':
+                    renderEditProfile();
+                    break;
+                default:
+                    renderHome();
+            }
+        }
+
+        // ==================== AUTHENTICATION ====================
+        async function checkAuthStatus() {
+            try {
+                const response = await fetch('/api/auth/status');
+                const data = await response.json();
+                if (data.authenticated) {
+                    await loadUserData();
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        }
+
+        async function loadUserData() {
+            try {
+                const response = await fetch('/api/user/profile');
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser = data.user;
+                }
+            } catch (error) {
+                console.error('Failed to load user data:', error);
+            }
+        }
+
+        // ==================== NAVIGATION ====================
+        function updateNavigation() {
+            const navMenu = document.getElementById('navMenu');
+            
+            if (currentUser) {
+                navMenu.innerHTML = `
+                    <li><a href="#dashboard" class="${currentView === 'dashboard' ? 'active' : ''}">Dashboard</a></li>
+                    <li><a href="#profile" class="${currentView === 'profile' ? 'active' : ''}">Profile</a></li>
+                    <li><a href="#edit-profile" class="${currentView === 'edit-profile' ? 'active' : ''}">Edit Profile</a></li>
+                    <li><button onclick="logout()" class="btn-logout">Logout</button></li>
+                `;
+            } else {
+                navMenu.innerHTML = `
+                    <li><a href="#home" class="${currentView === 'home' ? 'active' : ''}">Home</a></li>
+                    <li><a href="#login" class="${currentView === 'login' ? 'active' : ''}">Login</a></li>
+                    <li><a href="#register" class="${currentView === 'register' ? 'active' : ''}">Register</a></li>
+                `;
+            }
+        }
+
+        // ==================== LOGOUT ====================
+        async function logout() {
+            try {
+                const response = await fetch('/api/logout', { method: 'POST' });
+                if (response.ok) {
+                    currentUser = null;
+                    window.location.hash = 'home';
+                }
+            } catch (error) {
+                showMessage('Logout failed', 'error');
+            }
+        }
+
+        // ==================== UI HELPERS ====================
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            
+            const app = document.getElementById('app');
+            app.insertBefore(messageDiv, app.firstChild);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Not set';
+            return new Date(dateString).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // ==================== VIEW RENDERERS ====================
+        function renderHome() {
+            document.getElementById('app').innerHTML = `
+                <div style="text-align: center; padding: 3rem;">
+                    <h1 style="font-size: 3rem; color: #2d3748; margin-bottom: 1rem;">
+                        Welcome to User Management System
+                    </h1>
+                    <p style="font-size: 1.2rem; color: #718096; margin-bottom: 2rem;">
+                        Complete user management with registration, login, and profile management
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <a href="#register" class="btn" style="width: auto;">Get Started</a>
+                        <a href="#login" class="btn btn-secondary" style="width: auto;">Login</a>
+                    </div>
+                    <div style="margin-top: 3rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                        <div>
+                            <div style="font-size: 3rem;">🔐</div>
+                            <h3>Secure Authentication</h3>
+                            <p>Password hashing and session management</p>
+                        </div>
+                        <div>
+                            <div style="font-size: 3rem;">👤</div>
+                            <h3>Complete Profiles</h3>
+                            <p>Store personal, professional, and social information</p>
+                        </div>
+                        <div>
+                            <div style="font-size: 3rem;">📊</div>
+                            <h3>User Dashboard</h3>
+                            <p>View and manage your profile easily</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAuthForms() {
+            const showLogin = window.location.hash === '#login';
+            
+            document.getElementById('app').innerHTML = `
+                <div class="forms-container">
+                    <!-- Login Form -->
+                    <div class="form-wrapper" id="loginForm" style="display: ${showLogin ? 'block' : 'none'}">
+                        <h2 style="text-align: center; margin-bottom: 2rem;">Welcome Back</h2>
+                        <form id="loginFormElement">
+                            <div class="form-group">
+                                <label for="loginEmail">Email Address</label>
+                                <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="loginPassword">Password</label>
+                                <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                            </div>
+                            <button type="submit" class="btn">Login</button>
+                        </form>
+                        <p class="toggle-form">
+                            Don't have an account? 
+                            <a href="#register">Create one</a>
+                        </p>
+                    </div>
+
+                    <!-- Register Form -->
+                    <div class="form-wrapper" id="registerForm" style="display: ${!showLogin ? 'block' : 'none'}">
+                        <h2 style="text-align: center; margin-bottom: 2rem;">Create Account</h2>
+                        <form id="registerFormElement">
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label for="firstName">First Name</label>
+                                    <input type="text" id="firstName" placeholder="John" required>
+                                </div>
+                                <div class="form-group half">
+                                    <label for="lastName">Last Name</label>
+                                    <input type="text" id="lastName" placeholder="Doe" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="regEmail">Email Address</label>
+                                <input type="email" id="regEmail" placeholder="john@example.com" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label for="regPassword">Password</label>
+                                    <input type="password" id="regPassword" placeholder="Minimum 6 characters" required>
+                                    <small>At least 6 characters</small>
+                                </div>
+                                <div class="form-group half">
+                                    <label for="confirmPassword">Confirm Password</label>
+                                    <input type="password" id="confirmPassword" placeholder="Re-enter password" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phoneNumber">Phone Number (Optional)</label>
+                                <input type="tel" id="phoneNumber" placeholder="+1 234 567 8900">
+                            </div>
+
+                            <button type="submit" class="btn">Create Account</button>
+                        </form>
+                        <p class="toggle-form">
+                            Already have an account? 
+                            <a href="#login">Login</a>
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            // Add form handlers
+            if (showLogin) {
+                document.getElementById('loginFormElement').addEventListener('submit', handleLogin);
+            } else {
+                document.getElementById('registerFormElement').addEventListener('submit', handleRegister);
+            }
+        }
+
+        function renderDashboard() {
+            if (!currentUser) {
+                loadUserData().then(() => renderDashboard());
+                return;
+            }
+
+            // Load dashboard data
+            fetch('/api/user/dashboard')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('app').innerHTML = `
+                        <div class="dashboard">
+                            <div class="dashboard-header">
+                                <h1>Welcome back, ${data.user.name}!</h1>
+                                <p>Here's your profile summary</p>
+                            </div>
+
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon">📊</div>
+                                    <div class="stat-info">
+                                        <h3>Profile Completion</h3>
+                                        <div class="progress-bar">
+                                            <div class="progress" style="width: ${data.user.profileCompletion}%">
+                                                ${data.user.profileCompletion}%
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-icon">🔑</div>
+                                    <div class="stat-info">
+                                        <h3>Login Count</h3>
+                                        <p>${data.user.loginCount}</p>
+                                    </div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-icon">📅</div>
+                                    <div class="stat-info">
+                                        <h3>Member Since</h3>
+                                        <p>${formatDate(data.user.memberSince)}</p>
+                                    </div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-icon">🕐</div>
+                                    <div class="stat-info">
+                                        <h3>Last Login</h3>
+                                        <p>${formatDate(data.user.lastLogin)}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="quick-actions">
+                                <h2>Quick Actions</h2>
+                                <div class="action-buttons">
+                                    <a href="#profile" class="action-btn">
+                                        <span class="action-icon">👤</span>
+                                        View Profile
+                                    </a>
+                                    <a href="#edit-profile" class="action-btn">
+                                        <span class="action-icon">✏️</span>
+                                        Edit Profile
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+
+        function renderProfile() {
+            if (!currentUser) {
+                loadUserData().then(() => renderProfile());
+                return;
+            }
+
+            const user = currentUser;
+            const name = `${user.personalInfo.firstName} ${user.personalInfo.lastName}`;
+            const initials = user.personalInfo.firstName[0] + user.personalInfo.lastName[0];
+
+            document.getElementById('app').innerHTML = `
+                <div class="profile-content">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <div class="avatar-placeholder">${initials}</div>
+                        </div>
+                        <div class="profile-title">
+                            <h1>${name}</h1>
+                            <p>${user.email}</p>
+                        </div>
+                    </div>
+
+                    <div class="profile-sections">
+                        <!-- Personal Information -->
+                        <div class="profile-section">
+                            <h2>Personal Information</h2>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>First Name</label>
+                                    <span>${user.personalInfo.firstName || 'Not set'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Last Name</label>
+                                    <span>${user.personalInfo.lastName || 'Not set'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Date of Birth</label>
+                                    <span>${formatDate(user.personalInfo.dateOfBirth)}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Gender</label>
+                                    <span>${user.personalInfo.gender || 'Not set'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Phone</label>
+                                    <span>${user.personalInfo.phoneNumber || 'Not set'}</span>
+                                </div>
+                                <div class="info-item full-width">
+                                    <label>Bio</label>
+                                    <span>${user.personalInfo.bio || 'No bio provided'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="profile-section">
+                            <h2>Address</h2>
+                            <div class="info-grid">
+                                <div class="info-item full-width">
+                                    <label>Street</label>
+                                    <span>${user.address?.street || 'Not set'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>City</label>
+                                    <span>${user.address?.city || 'Not set'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>State</label>
+                                    <span>${user.address?.state || 'Not set'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Country</label>
+                                    <span>${user.address?.country || 'Not set'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>ZIP Code</label>
+                                    <span>${user.address?.zipCode || 'Not set'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Professional Information -->
+                        <div class="profile-section">
+                            <h2>Professional Information</h2>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Occupation</label>
+                                    <span>${user.professional?.occupation || 'Not set'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Company</label>
+                                    <span>${user.professional?.company || 'Not set'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Experience</label>
+                                    <span>${user.professional?.experience || '0'} years</span>
+                                </div>
+                                <div class="info-item full-width">
+                                    <label>Skills</label>
+                                    <span>${user.professional?.skills?.join(', ') || 'No skills listed'}</span>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 1rem;">
+                                <h3>Education</h3>
+                                ${user.professional?.education?.map(edu => `
+                                    <div class="education-item">
+                                        <h4>${edu.degree}</h4>
+                                        <p>${edu.institution} • ${edu.year} • Grade: ${edu.grade || 'N/A'}</p>
+                                    </div>
+                                `).join('') || '<p>No education history</p>'}
+                            </div>
+                        </div>
+
+                        <!-- Social Links -->
+                        <div class="profile-section">
+                            <h2>Social Links</h2>
+                            <div class="social-links">
+                                ${user.social?.linkedin ? `<a href="${user.social.linkedin}" target="_blank" class="social-link linkedin">LinkedIn</a>` : ''}
+                                ${user.social?.github ? `<a href="${user.social.github}" target="_blank" class="social-link github">GitHub</a>` : ''}
+                                ${user.social?.twitter ? `<a href="${user.social.twitter}" target="_blank" class="social-link twitter">Twitter</a>` : ''}
+                                ${user.social?.facebook ? `<a href="${user.social.facebook}" target="_blank" class="social-link facebook">Facebook</a>` : ''}
+                                ${user.social?.instagram ? `<a href="${user.social.instagram}" target="_blank" class="social-link instagram">Instagram</a>` : ''}
+                                ${user.social?.website ? `<a href="${user.social.website}" target="_blank" class="social-link website">Website</a>` : ''}
+                            </div>
+                        </div>
+
+                        <!-- Preferences -->
+                        <div class="profile-section">
+                            <h2>Preferences</h2>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Newsletter</label>
+                                    <span>${user.preferences?.newsletter ? 'Subscribed' : 'Not subscribed'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Language</label>
+                                    <span>${user.preferences?.language || 'en'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Theme</label>
+                                    <span>${user.preferences?.theme || 'light'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Notifications</label>
+                                    <span>${user.preferences?.notifications ? 'Enabled' : 'Disabled'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderEditProfile() {
+            if (!currentUser) {
+                loadUserData().then(() => renderEditProfile());
+                return;
+            }
+
+            const user = currentUser;
+
+            document.getElementById('app').innerHTML = `
+                <div class="edit-profile-content">
+                    <h1 style="margin-bottom: 2rem;">Edit Profile</h1>
+                    
+                    <div class="edit-tabs">
+                        <button class="tab-btn active" onclick="showTab('personal')">Personal</button>
+                        <button class="tab-btn" onclick="showTab('address')">Address</button>
+                        <button class="tab-btn" onclick="showTab('professional')">Professional</button>
+                        <button class="tab-btn" onclick="showTab('social')">Social</button>
+                        <button class="tab-btn" onclick="showTab('preferences')">Preferences</button>
+                    </div>
+
+                    <!-- Personal Tab -->
+                    <div id="personal-tab" class="tab-content active">
+                        <h2>Personal Information</h2>
+                        <form id="personalForm">
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label>First Name</label>
+                                    <input type="text" id="editFirstName" value="${user.personalInfo.firstName || ''}" required>
+                                </div>
+                                <div class="form-group half">
+                                    <label>Last Name</label>
+                                    <input type="text" id="editLastName" value="${user.personalInfo.lastName || ''}" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label>Date of Birth</label>
+                                    <input type="date" id="editDob" value="${user.personalInfo.dateOfBirth ? user.personalInfo.dateOfBirth.split('T')[0] : ''}">
+                                </div>
+                                <div class="form-group half">
+                                    <label>Gender</label>
+                                    <select id="editGender">
+                                        <option value="">Select Gender</option>
+                                        <option value="male" ${user.personalInfo.gender === 'male' ? 'selected' : ''}>Male</option>
+                                        <option value="female" ${user.personalInfo.gender === 'female' ? 'selected' : ''}>Female</option>
+                                        <option value="other" ${user.personalInfo.gender === 'other' ? 'selected' : ''}>Other</option>
+                                        <option value="prefer-not-to-say" ${user.personalInfo.gender === 'prefer-not-to-say' ? 'selected' : ''}>Prefer not to say</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" id="editPhone" value="${user.personalInfo.phoneNumber || ''}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Bio</label>
+                                <textarea id="editBio" rows="4" placeholder="Tell us about yourself...">${user.personalInfo.bio || ''}</textarea>
+                            </div>
+
+                            <button type="submit" class="btn">Save Personal Information</button>
+                        </form>
+                    </div>
+
+                    <!-- Address Tab -->
+                    <div id="address-tab" class="tab-content">
+                        <h2>Address Information</h2>
+                        <form id="addressForm">
+                            <div class="form-group">
+                                <label>Street Address</label>
+                                <input type="text" id="editStreet" value="${user.address?.street || ''}">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label>City</label>
+                                    <input type="text" id="editCity" value="${user.address?.city || ''}">
+                                </div>
+                                <div class="form-group half">
+                                    <label>State</label>
+                                    <input type="text" id="editState" value="${user.address?.state || ''}">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label>Country</label>
+                                    <input type="text" id="editCountry" value="${user.address?.country || ''}">
+                                </div>
+                                <div class="form-group half">
+                                    <label>ZIP Code</label>
+                                    <input type="text" id="editZip" value="${user.address?.zipCode || ''}">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn">Save Address</button>
+                        </form>
+                    </div>
+
+                    <!-- Professional Tab -->
+                    <div id="professional-tab" class="tab-content">
+                        <h2>Professional Information</h2>
+                        <form id="professionalForm">
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label>Occupation</label>
+                                    <input type="text" id="editOccupation" value="${user.professional?.occupation || ''}">
+                                </div>
+                                <div class="form-group half">
+                                    <label>Company</label>
+                                    <input type="text" id="editCompany" value="${user.professional?.company || ''}">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Years of Experience</label>
+                                <input type="number" id="editExperience" min="0" max="50" value="${user.professional?.experience || ''}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Skills (comma separated)</label>
+                                <input type="text" id="editSkills" value="${user.professional?.skills?.join(', ') || ''}" placeholder="JavaScript, Python, React">
+                            </div>
+
+                            <button type="submit" class="btn">Save Professional Info</button>
+                        </form>
+
+                        <h3 style="margin: 2rem 0 1rem;">Add Education</h3>
+                        <form id="educationForm">
+                            <div class="form-group">
+                                <label>Degree</label>
+                                <input type="text" id="editDegree" placeholder="e.g., Bachelor of Science">
+                            </div>
+                            <div class="form-group">
+                                <label>Institution</label>
+                                <input type="text" id="editInstitution" placeholder="University Name">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label>Year</label>
+                                    <input type="number" id="editYear" min="1900" max="2100" placeholder="2020">
+                                </div>
+                                <div class="form-group half">
+                                    <label>Grade</label>
+                                    <input type="text" id="editGrade" placeholder="A, 85%, etc.">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-secondary">Add Education</button>
+                        </form>
+                    </div>
+
+                    <!-- Social Tab -->
+                    <div id="social-tab" class="tab-content">
+                        <h2>Social Links</h2>
+                        <form id="socialForm">
+                            <div class="form-group">
+                                <label>LinkedIn</label>
+                                <input type="url" id="editLinkedin" value="${user.social?.linkedin || ''}" placeholder="https://linkedin.com/in/username">
+                            </div>
+                            <div class="form-group">
+                                <label>GitHub</label>
+                                <input type="url" id="editGithub" value="${user.social?.github || ''}" placeholder="https://github.com/username">
+                            </div>
+                            <div class="form-group">
+                                <label>Twitter</label>
+                                <input type="url" id="editTwitter" value="${user.social?.twitter || ''}" placeholder="https://twitter.com/username">
+                            </div>
+                            <div class="form-group">
+                                <label>Facebook</label>
+                                <input type="url" id="editFacebook" value="${user.social?.facebook || ''}" placeholder="https://facebook.com/username">
+                            </div>
+                            <div class="form-group">
+                                <label>Instagram</label>
+                                <input type="url" id="editInstagram" value="${user.social?.instagram || ''}" placeholder="https://instagram.com/username">
+                            </div>
+                            <div class="form-group">
+                                <label>Personal Website</label>
+                                <input type="url" id="editWebsite" value="${user.social?.website || ''}" placeholder="https://yourwebsite.com">
+                            </div>
+                            <button type="submit" class="btn">Save Social Links</button>
+                        </form>
+                    </div>
+
+                    <!-- Preferences Tab -->
+                    <div id="preferences-tab" class="tab-content">
+                        <h2>Preferences</h2>
+                        <form id="preferencesForm">
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="editNewsletter" ${user.preferences?.newsletter ? 'checked' : ''}>
+                                    Subscribe to Newsletter
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Language</label>
+                                <select id="editLanguage">
+                                    <option value="en" ${user.preferences?.language === 'en' ? 'selected' : ''}>English</option>
+                                    <option value="es" ${user.preferences?.language === 'es' ? 'selected' : ''}>Spanish</option>
+                                    <option value="fr" ${user.preferences?.language === 'fr' ? 'selected' : ''}>French</option>
+                                    <option value="de" ${user.preferences?.language === 'de' ? 'selected' : ''}>German</option>
+                                    <option value="zh" ${user.preferences?.language === 'zh' ? 'selected' : ''}>Chinese</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Theme</label>
+                                <select id="editTheme">
+                                    <option value="light" ${user.preferences?.theme === 'light' ? 'selected' : ''}>Light</option>
+                                    <option value="dark" ${user.preferences?.theme === 'dark' ? 'selected' : ''}>Dark</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="editNotifications" ${user.preferences?.notifications ? 'checked' : ''}>
+                                    Enable Notifications
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn">Save Preferences</button>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            // Add form handlers
+            document.getElementById('personalForm').addEventListener('submit', handlePersonalUpdate);
+            document.getElementById('addressForm').addEventListener('submit', handleAddressUpdate);
+            document.getElementById('professionalForm').addEventListener('submit', handleProfessionalUpdate);
+            document.getElementById('educationForm').addEventListener('submit', handleEducationAdd);
+            document.getElementById('socialForm').addEventListener('submit', handleSocialUpdate);
+            document.getElementById('preferencesForm').addEventListener('submit', handlePreferencesUpdate);
+        }
+
+        // ==================== TAB HANDLING ====================
+        window.showTab = function(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        };
+
+        // ==================== FORM HANDLERS ====================
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('Login successful!', 'success');
+                    currentUser = data.user;
+                    setTimeout(() => {
+                        window.location.hash = 'dashboard';
+                    }, 1000);
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Login failed. Please try again.', 'error');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+
+            // Validation
+            if (password !== confirmPassword) {
+                showMessage('Passwords do not match', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ firstName, lastName, email, password, phoneNumber })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('Registration successful!', 'success');
+                    currentUser = data.user;
+                    setTimeout(() => {
+                        window.location.hash = 'dashboard';
+                    }, 1000);
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Registration failed. Please try again.', 'error');
+            }
+        }
+
+        async function handlePersonalUpdate(e) {
+            e.preventDefault();
+            
+            const data = {
+                firstName: document.getElementById('editFirstName').value,
+                lastName: document.getElementById('editLastName').value,
+                dateOfBirth: document.getElementById('editDob').value,
+                gender: document.getElementById('editGender').value,
+                phoneNumber: document.getElementById('editPhone').value,
+                bio: document.getElementById('editBio').value
+            };
+
+            try {
+                const response = await fetch('/api/user/personal', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showMessage('Personal information updated!', 'success');
+                    await loadUserData();
+                } else {
+                    showMessage('Update failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Update failed', 'error');
+            }
+        }
+
+        async function handleAddressUpdate(e) {
+            e.preventDefault();
+            
+            const data = {
+                street: document.getElementById('editStreet').value,
+                city: document.getElementById('editCity').value,
+                state: document.getElementById('editState').value,
+                country: document.getElementById('editCountry').value,
+                zipCode: document.getElementById('editZip').value
+            };
+
+            try {
+                const response = await fetch('/api/user/address', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showMessage('Address updated!', 'success');
+                    await loadUserData();
+                } else {
+                    showMessage('Update failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Update failed', 'error');
+            }
+        }
+
+        async function handleProfessionalUpdate(e) {
+            e.preventDefault();
+            
+            const data = {
+                occupation: document.getElementById('editOccupation').value,
+                company: document.getElementById('editCompany').value,
+                experience: document.getElementById('editExperience').value,
+                skills: document.getElementById('editSkills').value
+            };
+
+            try {
+                const response = await fetch('/api/user/professional', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showMessage('Professional information updated!', 'success');
+                    await loadUserData();
+                } else {
+                    showMessage('Update failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Update failed', 'error');
+            }
+        }
+
+        async function handleEducationAdd(e) {
+            e.preventDefault();
+            
+            const data = {
+                degree: document.getElementById('editDegree').value,
+                institution: document.getElementById('editInstitution').value,
+                year: document.getElementById('editYear').value,
+                grade: document.getElementById('editGrade').value
+            };
+
+            if (!data.degree || !data.institution || !data.year) {
+                showMessage('Please fill all required fields', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/user/education', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showMessage('Education added!', 'success');
+                    document.getElementById('editDegree').value = '';
+                    document.getElementById('editInstitution').value = '';
+                    document.getElementById('editYear').value = '';
+                    document.getElementById('editGrade').value = '';
+                    await loadUserData();
+                } else {
+                    showMessage('Failed to add education', 'error');
+                }
+            } catch (error) {
+                showMessage('Failed to add education', 'error');
+            }
+        }
+
+        async function handleSocialUpdate(e) {
+            e.preventDefault();
+            
+            const data = {
+                linkedin: document.getElementById('editLinkedin').value,
+                github: document.getElementById('editGithub').value,
+                twitter: document.getElementById('editTwitter').value,
+                facebook: document.getElementById('editFacebook').value,
+                instagram: document.getElementById('editInstagram').value,
+                website: document.getElementById('editWebsite').value
+            };
+
+            try {
+                const response = await fetch('/api/user/social', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showMessage('Social links updated!', 'success');
+                    await loadUserData();
+                } else {
+                    showMessage('Update failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Update failed', 'error');
+            }
+        }
+
+        async function handlePreferencesUpdate(e) {
+            e.preventDefault();
+            
+            const data = {
+                newsletter: document.getElementById('editNewsletter').checked,
+                language: document.getElementById('editLanguage').value,
+                theme: document.getElementById('editTheme').value,
+                notifications: document.getElementById('editNotifications').checked
+            };
+
+            try {
+                const response = await fetch('/api/user/preferences', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showMessage('Preferences updated!', 'success');
+                    await loadUserData();
+                } else {
+                    showMessage('Update failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Update failed', 'error');
+            }
+        }
+
+        // Make functions available globally
+        window.logout = logout;
+        window.showTab = showTab;
+    </script>
+</body>
+</html>
